@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import axios from 'axios';
 
 const cuisines = ['ITALIAN', 'CHINESE', 'NORTHINDIAN', 'SOUTHINDIAN', 'AMERICAN'];
@@ -32,7 +33,7 @@ const RestaurantMenuManager = () => {
     price: 0,
     cuisine: '',
     category: '',
-    isAvailable: true
+    isAvailable: true,
   });
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
 
@@ -43,7 +44,7 @@ const RestaurantMenuManager = () => {
   const fetchMenuItems = async () => {
     try {
       const response = await axios.get<MenuItem[]>(`${API_BASE_URL}/${RESTAURANT_ID}/menu-items`);
-      console.log(response)
+      console.log(response);
       setMenuItems(response.data);
     } catch (error) {
       console.error('Error fetching menu items:', error);
@@ -80,9 +81,10 @@ const RestaurantMenuManager = () => {
   }, {});
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Restaurant Menu Manager</h1>
-      
+    <div className="p-4 max-w-4xl mx-auto bg-white">
+      <h1 className="text-2xl text-black font-bold mb-4">Restaurant Menu Manager</h1>
+
+      {/* Add New Item Dialog */}
       <Dialog>
         <DialogTrigger asChild>
           <Button className="mb-4">Add New Item</Button>
@@ -92,62 +94,90 @@ const RestaurantMenuManager = () => {
             <DialogTitle>Add New Menu Item</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
+            {/* Name Field */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">Name</Label>
-              <Input 
-                id="name" 
-                value={newItem.name} 
-                onChange={(e) => setNewItem({...newItem, name: e.target.value})} 
-                className="col-span-3" 
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={newItem.name}
+                onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                className="col-span-3"
               />
             </div>
+            {/* Price Field */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="price" className="text-right">Price</Label>
-              <Input 
-                id="price" 
-                type="number" 
-                value={newItem.price} 
-                onChange={(e) => setNewItem({...newItem, price: parseFloat(e.target.value)})} 
-                className="col-span-3" 
+              <Label htmlFor="price" className="text-right">
+                Price
+              </Label>
+              <Input
+                id="price"
+                type="number"
+                value={newItem.price}
+                onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) })}
+                className="col-span-3"
               />
             </div>
+            {/* Cuisine Field */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="cuisine" className="text-right">Cuisine</Label>
-              <Select 
-                value={newItem.cuisine} 
-                onValueChange={(value) => setNewItem({...newItem, cuisine: value})}
+              <Label htmlFor="cuisine" className="text-right">
+                Cuisine
+              </Label>
+              <Select
+                value={newItem.cuisine}
+                onValueChange={(value) => setNewItem({ ...newItem, cuisine: value })}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select cuisine" />
                 </SelectTrigger>
                 <SelectContent>
                   {cuisines.map((cuisine) => (
-                    <SelectItem key={cuisine} value={cuisine}>{cuisine}</SelectItem>
+                    <SelectItem key={cuisine} value={cuisine}>
+                      {cuisine}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+            {/* Category Field */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="category" className="text-right">Category</Label>
-              <Select 
-                value={newItem.category} 
-                onValueChange={(value) => setNewItem({...newItem, category: value})}
+              <Label htmlFor="category" className="text-right">
+                Category
+              </Label>
+              <Select
+                value={newItem.category}
+                onValueChange={(value) => setNewItem({ ...newItem, category: value })}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            {/* Availability Field */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="isAvailable" className="text-right">
+                Availability
+              </Label>
+              <Switch
+                checked={newItem.isAvailable}
+                onCheckedChange={(checked) => setNewItem({ ...newItem, isAvailable: checked })}
+                id="isAvailable"
+              />
             </div>
           </div>
           <Button onClick={handleAddItem}>Add Item</Button>
         </DialogContent>
       </Dialog>
 
+      {/* Display Menu Items */}
       {Object.entries(groupedItems).map(([cuisine, categories]) => (
         <Card key={cuisine} className="mb-6">
           <CardHeader>
@@ -163,12 +193,12 @@ const RestaurantMenuManager = () => {
                       <CardContent className="p-4">
                         <h4 className="font-bold">{item.name}</h4>
                         <p className="text-sm text-gray-600">Price: ${item.price}</p>
-                        <Badge variant={item.isAvailable ? "default" : "secondary"}>
-                          {item.isAvailable ? "Available" : "Unavailable"}
+                        <Badge variant={item.isAvailable ? 'default' : 'destructive'}>
+                          {item.isAvailable ? 'Available' : 'Unavailable'}
                         </Badge>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="mt-2"
                           onClick={() => setEditingItem(item)}
                         >
@@ -184,6 +214,7 @@ const RestaurantMenuManager = () => {
         </Card>
       ))}
 
+      {/* Edit Item Dialog */}
       {editingItem && (
         <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
           <DialogContent>
@@ -191,56 +222,83 @@ const RestaurantMenuManager = () => {
               <DialogTitle>Edit Menu Item</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              {/* Name Field */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-name" className="text-right">Name</Label>
-                <Input 
-                  id="edit-name" 
-                  value={editingItem.name} 
-                  onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} 
-                  className="col-span-3" 
+                <Label htmlFor="edit-name" className="text-right">
+                  Name
+                </Label>
+                <Input
+                  id="edit-name"
+                  value={editingItem.name}
+                  onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
+                  className="col-span-3"
                 />
               </div>
+              {/* Price Field */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-price" className="text-right">Price</Label>
-                <Input 
-                  id="edit-price" 
-                  type="number" 
-                  value={editingItem.price} 
-                  onChange={(e) => setEditingItem({...editingItem, price: parseFloat(e.target.value)})} 
-                  className="col-span-3" 
+                <Label htmlFor="edit-price" className="text-right">
+                  Price
+                </Label>
+                <Input
+                  id="edit-price"
+                  type="number"
+                  value={editingItem.price}
+                  onChange={(e) => setEditingItem({ ...editingItem, price: parseFloat(e.target.value) })}
+                  className="col-span-3"
                 />
               </div>
+              {/* Cuisine Field */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-cuisine" className="text-right">Cuisine</Label>
-                <Select 
-                  value={editingItem.cuisine} 
-                  onValueChange={(value) => setEditingItem({...editingItem, cuisine: value})}
+                <Label htmlFor="edit-cuisine" className="text-right">
+                  Cuisine
+                </Label>
+                <Select
+                  value={editingItem.cuisine}
+                  onValueChange={(value) => setEditingItem({ ...editingItem, cuisine: value })}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select cuisine" />
                   </SelectTrigger>
                   <SelectContent>
                     {cuisines.map((cuisine) => (
-                      <SelectItem key={cuisine} value={cuisine}>{cuisine}</SelectItem>
+                      <SelectItem key={cuisine} value={cuisine}>
+                        {cuisine}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+              {/* Category Field */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-category" className="text-right">Category</Label>
-                <Select 
-                  value={editingItem.category} 
-                  onValueChange={(value) => setEditingItem({...editingItem, category: value})}
+                <Label htmlFor="edit-category" className="text-right">
+                  Category
+                </Label>
+                <Select
+                  value={editingItem.category}
+                  onValueChange={(value) => setEditingItem({ ...editingItem, category: value })}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              {/* Availability Field */}
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-isAvailable" className="text-right">
+                  Availability
+                </Label>
+                <Switch
+                  checked={editingItem.isAvailable}
+                  onCheckedChange={(checked) => setEditingItem({ ...editingItem, isAvailable: checked })}
+                  id="edit-isAvailable"
+                />
               </div>
               <Button onClick={handleUpdateItem}>Update Item</Button>
             </div>
