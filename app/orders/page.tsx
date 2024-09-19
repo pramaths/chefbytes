@@ -89,8 +89,8 @@ const OrderManagement: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Order Management</h1>
+    <div className="container mx-auto p-4 bg-white">
+      <h1 className="text-2xl font-bold mb-4 text-black sm:text-xl">Order Management</h1>
 
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogTrigger asChild>
@@ -165,7 +165,8 @@ const OrderManagement: React.FC = () => {
                 <Input
                   id="editPhoneNumber"
                   value={editingOrder.phoneNumber}
-                  onChange={(e) => setEditingOrder({ ...editingOrder, phoneNumber: e.target.value })}
+                  // onChange={(e) => setEditingOrder({ ...editingOrder, phoneNumber: e.target.value })}
+                  disabled
                 />
               </div>
               <div className="space-y-2">
