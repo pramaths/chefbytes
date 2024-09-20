@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import axios from 'axios';
 import Header from "@/components/sections/Header"
+import Tile from '@/components/ui/tile';
+import OrderTile from '@/components/ui/orderTile';
 
 
 const cuisines = ['ITALIAN', 'CHINESE', 'NORTHINDIAN', 'SOUTHINDIAN', 'AMERICAN'];
@@ -83,10 +85,56 @@ const RestaurantMenuManager = () => {
   }, {});
 
   return (
-    <div className="p-4 max-w-4xl mx-auto bg-white">
+    <div className="p-4 max-w-6xl mx-auto bg-white">
+
       <div className="text-2xl text-black font-bold mb-4">
-        <Header/>
+        <Header />
       </div>
+
+
+      <div className="container mx-auto px-4 py-2 text-black">
+        {/* Full-width tile */}
+        <div className="mb-4">
+          <Tile title="INR 5670" description="Today's Earnings" variant='fullWidth' />
+        </div>
+
+        {/* Three tiles below */}
+        <div className="grid grid-cols-3 gap-6">
+          <Tile title="45" description="Total Orders" />
+          <Tile title="12" description="In Progress" />
+          <Tile title="11" description="Cancelled" />
+        </div>
+      </div>
+
+      <div className="w-full container mx-auto px-4 py-2">
+        <Button className="w-full bg-purple-600 text-white hover:bg-purple-700 transition duration-300">
+          View Orders
+        </Button>
+      </div>
+
+      <div className=' text-black'>
+        <OrderTile orderTitle={'#122111'} orderDescription={'This is desc of the order'}></OrderTile>
+      </div>
+
+      <div className="w-full container mx-auto px-4 py-2 flex flex-row space-x-2">
+        <Button className="w-full bg-sky-600 text-white hover:bg-sky-700 transition duration-300">
+          View Menu
+        </Button>
+        <Button className="w-full bg-yellow-600 text-white hover:bg-yellow-700 transition duration-300">
+          Update Menu
+        </Button>
+      </div>
+      <div className="w-full container mx-auto px-4 py-2">
+        <Button className="w-full bg-orange-600 text-white hover:bg-orange-700 transition duration-300">
+          Raise Dispute
+        </Button>
+      </div>
+      <div className="w-full container mx-auto px-4 py-2">
+        <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
+          Access customer data
+        </Button>
+      </div>
+
 
       {/* Add New Item Dialog */}
       <Dialog>
