@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ interface MenuItem {
   cuisine: string;
   category: string;
   isAvailable: boolean;
+  image: string;
 }
 
 const RestaurantMenuManager = () => {
@@ -38,6 +40,7 @@ const RestaurantMenuManager = () => {
     cuisine: '',
     category: '',
     isAvailable: true,
+    image: '/api/placeholder/150/150',
   });
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
 
@@ -48,8 +51,12 @@ const RestaurantMenuManager = () => {
   const fetchMenuItems = async () => {
     try {
       const response = await axios.get<MenuItem[]>(`${API_BASE_URL}/${RESTAURANT_ID}/menu-items`);
-      console.log(response);
-      setMenuItems(response.data);
+      // Add a hardcoded image to each menu item
+      const itemsWithImages = response.data.map(item => ({
+        ...item,
+        image: '/api/placeholder/150/150'
+      }));
+      setMenuItems(itemsWithImages);
     } catch (error) {
       console.error('Error fetching menu items:', error);
     }
@@ -59,7 +66,7 @@ const RestaurantMenuManager = () => {
     try {
       await axios.post(`${API_BASE_URL}/${RESTAURANT_ID}/menu-items`, newItem);
       fetchMenuItems();
-      setNewItem({ name: '', price: 0, cuisine: '', category: '', isAvailable: true });
+      setNewItem({ name: '', price: 0, cuisine: '', category: '', isAvailable: true, image: '/api/placeholder/150/150' });
     } catch (error) {
       console.error('Error adding menu item:', error);
     }
@@ -85,8 +92,7 @@ const RestaurantMenuManager = () => {
   }, {});
 
   return (
-    <div className="p-4 max-w-6xl mx-auto bg-white">
-
+    <div className="p-4 max-w-4xl mx-auto bg-white">
       <div className="text-2xl text-black font-bold mb-4">
         <Header />
       </div>
@@ -139,14 +145,13 @@ const RestaurantMenuManager = () => {
       {/* Add New Item Dialog */}
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="mb-4">Add New Item</Button>
+          <Button className="mb-4 w-full sm:w-auto">Add New Item</Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Add New Menu Item</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            {/* Name Field */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 Name
@@ -158,7 +163,6 @@ const RestaurantMenuManager = () => {
                 className="col-span-3"
               />
             </div>
-            {/* Price Field */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="price" className="text-right">
                 Price
@@ -171,7 +175,6 @@ const RestaurantMenuManager = () => {
                 className="col-span-3"
               />
             </div>
-            {/* Cuisine Field */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="cuisine" className="text-right">
                 Cuisine
@@ -192,7 +195,6 @@ const RestaurantMenuManager = () => {
                 </SelectContent>
               </Select>
             </div>
-            {/* Category Field */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="category" className="text-right">
                 Category
@@ -213,7 +215,6 @@ const RestaurantMenuManager = () => {
                 </SelectContent>
               </Select>
             </div>
-            {/* Availability Field */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="isAvailable" className="text-right">
                 Availability
@@ -225,7 +226,7 @@ const RestaurantMenuManager = () => {
               />
             </div>
           </div>
-          <Button onClick={handleAddItem}>Add Item</Button>
+          <Button onClick={handleAddItem} className="w-full">Add Item</Button>
         </DialogContent>
       </Dialog>
 
@@ -241,17 +242,28 @@ const RestaurantMenuManager = () => {
                 <h3 className="text-lg font-semibold mb-2">{category}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {items.map((item) => (
-                    <Card key={item.id}>
-                      <CardContent className="p-4">
-                        <h4 className="font-bold">{item.name}</h4>
-                        <p className="text-sm text-gray-600">Price: ${item.price}</p>
-                        <Badge variant={item.isAvailable ? 'default' : 'destructive'}>
+                    <Card key={item.id} className="flex flex-col">
+                      <CardContent className="p-4 flex-grow">
+                        <div className="flex items-center mb-2">
+                          <Image
+                            src='/default.webp'
+                            alt={item.name}
+                            width={60}
+                            height={60}
+                            className="rounded-md mr-2"
+                          />
+                          <div>
+                            <h4 className="font-bold">{item.name}</h4>
+                            <p className="text-sm text-gray-600">₹{item.price}</p>
+                          </div>
+                        </div>
+                        <Badge variant={item.isAvailable ? 'default' : 'destructive'} className="mb-2">
                           {item.isAvailable ? 'Available' : 'Unavailable'}
                         </Badge>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="mt-2"
+                          className="w-full"
                           onClick={() => setEditingItem(item)}
                         >
                           Edit
@@ -269,12 +281,11 @@ const RestaurantMenuManager = () => {
       {/* Edit Item Dialog */}
       {editingItem && (
         <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-          <DialogContent>
+          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Edit Menu Item</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              {/* Name Field */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-name" className="text-right">
                   Name
@@ -286,7 +297,6 @@ const RestaurantMenuManager = () => {
                   className="col-span-3"
                 />
               </div>
-              {/* Price Field */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-price" className="text-right">
                   Price
@@ -299,7 +309,6 @@ const RestaurantMenuManager = () => {
                   className="col-span-3"
                 />
               </div>
-              {/* Cuisine Field */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-cuisine" className="text-right">
                   Cuisine
@@ -320,7 +329,6 @@ const RestaurantMenuManager = () => {
                   </SelectContent>
                 </Select>
               </div>
-              {/* Category Field */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-category" className="text-right">
                   Category
@@ -341,7 +349,6 @@ const RestaurantMenuManager = () => {
                   </SelectContent>
                 </Select>
               </div>
-              {/* Availability Field */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-isAvailable" className="text-right">
                   Availability
@@ -352,7 +359,7 @@ const RestaurantMenuManager = () => {
                   id="edit-isAvailable"
                 />
               </div>
-              <Button onClick={handleUpdateItem}>Update Item</Button>
+              <Button onClick={handleUpdateItem} className="w-full">Update Item</Button>
             </div>
           </DialogContent>
         </Dialog>
