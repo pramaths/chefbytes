@@ -10,17 +10,30 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import Header from "@/components/sections/Header"
+import { MapPin, Share2 } from 'lucide-react';
+
 
 interface OrderItem {
   name: string;
   price: number;
 }
 
+
+interface Location {
+  latitude: number | 12.9716;
+  longitude: number | 77.5946;
+}
 interface Order {
   id: string;
   phoneNumber: string;
   items: OrderItem[];
   isComplete: boolean;
+  date: string | "12/09/2024";
+  customerName: string | "John Doe";
+  address: Location | { latitude: 12.9716, longitude: 77.5946 };
+  location: string | " 123, 4th Main, 5th Cross, Bangalore";
+  amount: number | 100;
   status: 'PAYMENTPENDING' | 'OUTFORDELIVERY' | 'DELIVERED';
 }
 
@@ -35,6 +48,7 @@ const OrderManagement: React.FC = () => {
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [search , setSearch] = useState<string>('');
 
   useEffect(() => {
     if (restaurantId) {
@@ -87,11 +101,25 @@ const OrderManagement: React.FC = () => {
       console.error('Error deleting order:', error);
     }
   };
+  const handleViewOnMap = (location:Location) => {
+    if (location && location.latitude && location.longitude) {
+      // Here you would implement the logic to open a map with the given coordinates
+      console.log(`View map at lat: ${location.latitude}, lng: ${location.longitude}`);
+    } else {
+      console.log('Location data is not available');
+    }
+  };
+  
+  const handleShare = (order : Order) => {
+    // Implement sharing logic here
+    console.log('Sharing order:', order.id);
+  };
 
   return (
     <div className="container mx-auto p-4 bg-white">
-      <h1 className="text-2xl font-bold mb-4 text-black sm:text-xl">Order Management</h1>
-
+      <div className="text-2xl text-black font-bold mb-4">
+        <Header/>
+      </div>
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogTrigger asChild>
           <Button className="mb-4">Add New Order</Button>
@@ -126,29 +154,44 @@ const OrderManagement: React.FC = () => {
 
       <div className="space-y-4">
         {orders.map((order) => (
-          <Card key={order.id}>
-            <CardHeader>
-              <CardTitle>Order {order.id}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Phone: {order.phoneNumber}</p>
-              <p>Items:</p>
-              <ul>
-                {order.items.map((item, index) => (
-                  <li key={index}>{item.name} - ₹{item.price}</li>
-                ))}
-              </ul>
-              <p>Status: {order.status}</p>
-              <p>Complete: {order.isComplete ? 'Yes' : 'No'}</p>
+          <Card key={order.id} className="border border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-center mb-2">
+                <p className="text-sm text-gray-500">{order.date}</p>
+                <span className={`text-xs px-2 py-1 rounded ${
+                  order.status === 'OUTFORDELIVERY' ? 'bg-yellow-100 text-yellow-800' :
+                  order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
+                  'bg-red-100 text-red-800'
+                }`}>
+                  {order.status}
+                </span>
+              </div>
+              <h3 className="font-semibold mb-2">{order.customerName}</h3>
+              <p className="text-sm text-gray-600 mb-2">{order.location}</p>
+              <div className="flex justify-between items-center">
+                <p className="text-sm font-medium">Amount: ₹{order.amount}</p>
+                <div className="space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-blue-600"
+                    onClick={() => handleViewOnMap(order.address)}
+                  >
+                    <MapPin className="w-4 h-4 mr-1" />
+                    View on map
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-blue-600"
+                    onClick={() => handleShare(order)}
+                  >
+                    <Share2 className="w-4 h-4 mr-1" />
+                    Share
+                  </Button>
+                </div>
+              </div>
             </CardContent>
-            <CardFooter className="space-x-2">
-              <Button variant="outline" onClick={() => { setEditingOrder(order); setIsEditDialogOpen(true); }}>
-                Edit
-              </Button>
-              <Button variant="destructive" onClick={() => handleDeleteOrder(order.id)}>
-                Delete
-              </Button>
-            </CardFooter>
           </Card>
         ))}
       </div>

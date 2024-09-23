@@ -38,7 +38,7 @@ const RestaurantMenuManager = () => {
     cuisine: '',
     category: '',
     isAvailable: true,
-    image: '/api/placeholder/150/150',
+    image: '/default.webp',
   });
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
 
@@ -49,10 +49,9 @@ const RestaurantMenuManager = () => {
   const fetchMenuItems = async () => {
     try {
       const response = await axios.get<MenuItem[]>(`${API_BASE_URL}/${RESTAURANT_ID}/menu-items`);
-      // Add a hardcoded image to each menu item
       const itemsWithImages = response.data.map(item => ({
         ...item,
-        image: '/api/placeholder/150/150'
+        image: '/default.webp'
       }));
       setMenuItems(itemsWithImages);
     } catch (error) {
@@ -64,7 +63,7 @@ const RestaurantMenuManager = () => {
     try {
       await axios.post(`${API_BASE_URL}/${RESTAURANT_ID}/menu-items`, newItem);
       fetchMenuItems();
-      setNewItem({ name: '', price: 0, cuisine: '', category: '', isAvailable: true, image: '/api/placeholder/150/150' });
+      setNewItem({ name: '', price: 0, cuisine: '', category: '', isAvailable: true, image: '/default.webp' });
     } catch (error) {
       console.error('Error adding menu item:', error);
     }
@@ -234,7 +233,7 @@ const RestaurantMenuManager = () => {
       {/* Edit Item Dialog */}
       {editingItem && (
         <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[250px]">
             <DialogHeader>
               <DialogTitle>Edit Menu Item</DialogTitle>
             </DialogHeader>

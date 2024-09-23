@@ -14,6 +14,7 @@ import axios from 'axios';
 import Header from "@/components/sections/Header"
 import Tile from '@/components/ui/tile';
 import OrderTile from '@/components/ui/orderTile';
+import Link from 'next/link';
 
 
 const cuisines = ['ITALIAN', 'CHINESE', 'NORTHINDIAN', 'SOUTHINDIAN', 'AMERICAN'];
@@ -113,9 +114,11 @@ const RestaurantMenuManager = () => {
       </div>
 
       <div className="w-full container mx-auto px-4 py-2">
+        <Link href="/orders">
         <Button className="w-full bg-purple-600 text-white hover:bg-purple-700 transition duration-300">
           View Orders
         </Button>
+        </Link>
       </div>
 
       <div className=' text-black'>
@@ -123,9 +126,11 @@ const RestaurantMenuManager = () => {
       </div>
 
       <div className="w-full container mx-auto px-4 py-2 flex flex-row space-x-2">
+        <Link href="/menu">
         <Button className="w-full bg-sky-600 text-white hover:bg-sky-700 transition duration-300">
           View Menu
         </Button>
+        </Link>
         <Button className="w-full bg-yellow-600 text-white hover:bg-yellow-700 transition duration-300">
           Update Menu
         </Button>
